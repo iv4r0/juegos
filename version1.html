@@ -1,0 +1,483 @@
+<!doctype html>
+<!--
+Single-file educational game para niños (4-5 años).
+Copia esto en un archivo .html y ábrelo en el navegador.
+-->
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Silabas: ma me mi mo mu - Juego</title>
+  <style>
+    /* Diseño colorido y responsive */
+    :root{
+      --bg:#FFF5E6;
+      --card:#FFFBF0;
+      --accent:#FF6F61;
+      --accent-2:#FFD166;
+      --good:#4CAF50;
+      --bad:#FF3B30;
+      --text:#2B2B2B;
+      --shadow: 0 8px 20px rgba(43,43,43,0.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Comic Sans MS", "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+      background: linear-gradient(180deg,#FFF5E6 0%, #FFF1D6 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      min-height:100vh;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .app{
+      width:100%;
+      max-width:900px;
+      background:var(--card);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header h1{
+      font-size:1.6rem;
+      margin:0;
+      color:var(--accent);
+    }
+    .controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn{
+      background:var(--accent-2);
+      border:none;
+      padding:8px 12px;
+      border-radius:12px;
+      font-size:1rem;
+      cursor:pointer;
+      box-shadow:0 6px rgba(0,0,0,0.06);
+    }
+    .btn.secondary{background:#fff;border:2px solid var(--accent-2);}
+    .score{
+      background:linear-gradient(90deg,#FFE29A,#FFD166);
+      padding:8px 12px;border-radius:12px;font-weight:700;
+      display:flex;gap:8px;align-items:center;
+    }
+
+    main{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .left, .right{
+      flex:1 1 320px;
+      min-width:260px;
+    }
+
+    /* Área del altavoz y la imagen (emoji) */
+    .player{
+      background:linear-gradient(180deg,#FFFFFF,#FFF7E0);
+      border-radius:14px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+    }
+    .speaker{
+      width:92px;height:92px;border-radius:50%;
+      background:linear-gradient(180deg,#FF6F61,#FF3B30);
+      display:flex;align-items:center;justify-content:center;color:white;
+      font-size:44px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.12);
+      border:6px solid rgba(255,255,255,0.18);
+    }
+    .image{
+      width:140px;height:140px;border-radius:18px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:72px;background:linear-gradient(90deg,#FFF7F2,#FFEDE6);
+      box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    }
+    .hint{font-size:1.05rem;color:#6b6b6b}
+
+    /* Syllable buttons */
+    .syllables{
+      display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    }
+    .syllable-btn{
+      background:#fff;border:3px solid #FFE9D5;border-radius:12px;padding:12px 16px;
+      font-size:1.2rem;cursor:pointer;min-width:72px;text-align:center;
+      transition:transform .12s, box-shadow .12s;
+      user-select:none;
+    }
+    .syllable-btn:active{transform:translateY(2px)}
+    .syllable-btn.selected{
+      background:var(--accent);
+      color:white;border-color:rgba(255,255,255,0.2);box-shadow:0 8px 18px rgba(255,111,97,0.18);
+    }
+
+    /* Submit */
+    .submit{
+      margin-top:10px;
+      display:flex;justify-content:center;
+    }
+    .submit .btn{
+      font-size:1.2rem;padding:12px 18px;border-radius:14px;
+      background: linear-gradient(90deg,#6BE96B,#4CAF50); color:white;border:none;
+    }
+
+    /* Mensajes animados */
+    .message{
+      position:relative;
+      height:64px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;font-weight:800;color:var(--good);
+      transform-origin:center;
+    }
+    .message.hidden{opacity:0;transform:scale(.9)}
+    .message.show{animation:pop .8s ease both;}
+    @keyframes pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+
+    /* Coin animation overlay */
+    .coin-layer{
+      position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;
+    }
+    .coin{
+      position:absolute;
+      width:26px;height:26px;border-radius:50%;
+      background:linear-gradient(180deg,#FFD54A,#FFB300);
+      box-shadow:0 6px 12px rgba(0,0,0,0.2);
+      display:flex;align-items:center;justify-content:center;font-weight:900;color:#6b4200;
+      font-size:14px;
+      transform-origin:center;
+      animation:rise 900ms ease forwards;
+    }
+    @keyframes rise{
+      0%{transform:translateY(0) scale(1);opacity:1}
+      100%{transform:translateY(-160px) translateX(var(--tx,0px)) scale(.7);opacity:0}
+    }
+
+    /* Final screen */
+    .final{
+      text-align:center;padding:18px;border-radius:12px;background:linear-gradient(90deg,#E8FFF2,#DFFFD9);
+      display:none;
+    }
+    .final.show{display:block}
+
+    /* Mobile tweaks */
+    @media (max-width:520px){
+      header h1{font-size:1.2rem}
+      .speaker{width:76px;height:76px;font-size:36px}
+      .image{width:120px;height:120px;font-size:56px}
+      .syllable-btn{min-width:60px;padding:10px 12px;font-size:1rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Juego de sílabas">
+    <header>
+      <h1>Silabas: ma • me • mi • mo • mu</h1>
+      <div class="controls">
+        <div class="score" id="score" aria-live="polite">Puntos: <span id="scoreVal">0</span></div>
+        <button class="btn secondary" id="restartBtn" title="Reiniciar">Reiniciar</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="left">
+        <div class="player" aria-hidden="false">
+          <!-- Botón altavoz -->
+          <div role="button" tabindex="0" aria-label="Reproducir palabra" id="speaker" class="speaker">🔊</div>
+
+          <!-- Imagen grande (emoji representativo) -->
+          <div class="image" id="picture" aria-hidden="false">👩‍👧</div>
+
+          <div class="hint" id="levelLabel">Nivel 1</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="player" style="align-items:stretch;">
+          <div style="text-align:center;font-weight:700;font-size:1.1rem">Selecciona las sílabas que están en la palabra</div>
+
+          <div class="syllables" id="syllableBtns" aria-hidden="false">
+            <!-- Botones se crean desde JS -->
+          </div>
+
+          <div class="submit">
+            <button class="btn" id="checkBtn">Comprobar</button>
+          </div>
+
+          <div class="message hidden" id="messageArea" aria-live="polite"></div>
+        </div>
+      </div>
+    </main>
+
+    <section class="final" id="finalScreen" aria-hidden="true">
+      <h2 id="finalText">¡Juego completado!</h2>
+      <p>Puntuación total: <strong id="totalPoints">0</strong></p>
+      <button class="btn" id="playAgain">Jugar de nuevo</button>
+    </section>
+  </div>
+
+  <!-- Capa para las monedas -->
+  <div class="coin-layer" id="coinLayer" aria-hidden="true"></div>
+
+  <script>
+    /***********************
+     * Datos del juego
+     * 3 niveles (cada nivel = 1 palabra de ejemplo)
+     * Cada palabra contiene al menos una de las sílabas: ma, me, mi, mo, mu
+     ***********************/
+    const LEVELS = [
+      {
+        id:1,
+        name:'Nivel 1',
+        word: 'mamá',          // contiene "ma"
+        syllables: ['ma'],
+        emoji: '👩‍👧'
+      },
+      {
+        id:2,
+        name:'Nivel 2',
+        word: 'miel',          // contiene "mi"
+        syllables: ['mi'],
+        emoji: '🍯'
+      },
+      {
+        id:3,
+        name:'Nivel 3',
+        word: 'mundo',         // contiene "mu"
+        syllables: ['mu'],
+        emoji: '🌍'
+      },
+      {
+        id:4,
+        name:'Nivel 4',
+        word: 'mesa',         // contiene "mu"
+        syllables: ['me'],
+        emoji: '🍽️'
+      }
+    ];
+
+    // Sílabas a mostrar como opciones
+    const OPTIONS = ['ma','me','mi','mo','mu'];
+
+    // Estado del juego
+    let currentLevelIndex = 0;
+    let score = 0;
+
+    // Elementos DOM
+    const speaker = document.getElementById('speaker');
+    const picture = document.getElementById('picture');
+    const levelLabel = document.getElementById('levelLabel');
+    const syllableBtnsContainer = document.getElementById('syllableBtns');
+    const checkBtn = document.getElementById('checkBtn');
+    const messageArea = document.getElementById('messageArea');
+    const scoreVal = document.getElementById('scoreVal');
+    const restartBtn = document.getElementById('restartBtn');
+    const finalScreen = document.getElementById('finalScreen');
+    const finalText = document.getElementById('finalText');
+    const totalPoints = document.getElementById('totalPoints');
+    const playAgain = document.getElementById('playAgain');
+    const coinLayer = document.getElementById('coinLayer');
+
+    // Crear botones de sílabas
+    function createSyllableButtons(){
+      syllableBtnsContainer.innerHTML = '';
+      OPTIONS.forEach(syl => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'syllable-btn';
+        b.textContent = syl;
+        b.dataset.syll = syl;
+        // Toggle selección
+        b.addEventListener('click', () => {
+          b.classList.toggle('selected');
+        });
+        // Soporte teclado
+        b.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); b.click(); }
+        });
+        syllableBtnsContainer.appendChild(b);
+      });
+    }
+
+    // Reproducir palabra con SpeechSynthesis (nativo)
+    function speakWord(text){
+      // Usa síntesis de voz del navegador (ES)
+      if('speechSynthesis' in window){
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES';
+        u.rate = 0.95;
+        u.pitch = 1;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+      } else {
+        // Fallback: breve beep si no hay TTS
+        beep(120, 0.12);
+      }
+    }
+
+    // Beep simple con WebAudio (para acierto o fallback)
+    function beep(freq = 440, duration = 0.15){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        o.connect(g);
+        g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        o.stop(ctx.currentTime + duration + 0.02);
+      }catch(e){ /* no audio */ }
+    }
+
+    // Mostrar mensaje animado (correcto o intento)
+    function showMessage(text, ok = true){
+      messageArea.textContent = text;
+      messageArea.style.color = ok ? 'var(--good)' : 'var(--bad)';
+      messageArea.classList.remove('hidden');
+      messageArea.classList.add('show');
+      setTimeout(() => {
+        messageArea.classList.remove('show');
+        messageArea.classList.add('hidden');
+      }, 1400);
+    }
+
+    // Animar monedas (10 por acierto)
+    function spawnCoins(amount = 10){
+      const rect = scoreVal.getBoundingClientRect();
+      const originX = rect.left + rect.width/2;
+      const originY = rect.top + rect.height/2;
+      for(let i=0;i<amount;i++){
+        const coin = document.createElement('div');
+        coin.className = 'coin';
+        coin.textContent = '¢'; // símbolo de moneda grande y amigable
+        // start near the score
+        coin.style.left = `${originX + (Math.random()*30-15)}px`;
+        coin.style.top = `${originY + (Math.random()*20-10)}px`;
+        // random horizontal drift
+        coin.style.setProperty('--tx', `${(Math.random()*100-50)}px`);
+        coinLayer.appendChild(coin);
+        // remover después de animación
+        setTimeout(()=> coin.remove(), 900);
+      }
+    }
+
+    // Inicializar nivel actual
+    function loadLevel(index){
+      const lvl = LEVELS[index];
+      if(!lvl) return;
+      currentLevelIndex = index;
+      levelLabel.textContent = lvl.name;
+      picture.textContent = lvl.emoji;
+      // Reset selections
+      document.querySelectorAll('.syllable-btn').forEach(b => b.classList.remove('selected'));
+      // Hide final screen
+      finalScreen.classList.remove('show');
+      finalScreen.setAttribute('aria-hidden','true');
+      // Ensure message hidden
+      messageArea.classList.add('hidden');
+    }
+
+    // Comprobar selección
+    function checkAnswer(){
+      const lvl = LEVELS[currentLevelIndex];
+      const selected = Array.from(document.querySelectorAll('.syllable-btn.selected')).map(b=>b.dataset.syll);
+      // Ordenar y comparar conjuntos
+      const correct = lvl.syllables.slice().sort();
+      const selSorted = selected.slice().sort();
+      const ok = arraysEqual(correct, selSorted);
+      if(ok){
+        // Acierto
+        score += 10; // 10 por acierto
+        scoreVal.textContent = score;
+        // Sonido de éxito + mensaje + monedas
+        beep(880,0.12); // tono agudo
+        showMessage('¡Muy bien! 🎉', true);
+        spawnCoins(10);
+        // Avanzar nivel después de breve pausa
+        setTimeout(()=> {
+          if(currentLevelIndex < LEVELS.length - 1){
+            loadLevel(currentLevelIndex + 1);
+          } else {
+            // Juego completado
+            finalText.textContent = '¡Juego completado! 🎊';
+            totalPoints.textContent = score;
+            finalScreen.classList.add('show');
+            finalScreen.setAttribute('aria-hidden','false');
+          }
+        }, 900);
+      } else {
+        // Error: retroalimentación
+        beep(220,0.12);
+        showMessage('Intenta de nuevo', false);
+        // Pequeña vibración si está disponible
+        if(navigator.vibrate) navigator.vibrate(120);
+      }
+    }
+
+    // Reiniciar juego
+    function restartGame(){
+      score = 0;
+      scoreVal.textContent = score;
+      loadLevel(0);
+    }
+
+    // Utils
+    function arraysEqual(a,b){
+      if(a.length !== b.length) return false;
+      for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return false;
+      return true;
+    }
+
+    // Eventos
+    speaker.addEventListener('click', () => {
+      const lvl = LEVELS[currentLevelIndex];
+      speakWord(lvl.word);
+    });
+    speaker.addEventListener('keydown', (e) => { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); speaker.click(); } });
+
+    checkBtn.addEventListener('click', checkAnswer);
+    restartBtn.addEventListener('click', () => {
+      restartGame();
+    });
+
+    playAgain.addEventListener('click', () => {
+      restartGame();
+      // scroll to top of app
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    // Inicialización
+    createSyllableButtons();
+    loadLevel(0);
+
+    // Comentarios sobre extensibilidad:
+    // - Para agregar más niveles, extiende la constante LEVELS con {word, syllables, emoji}.
+    // - Si quieres usar imágenes en URL, reemplaza picture.textContent por:
+    //   picture.innerHTML = `<img src="URL" alt="palabra" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
+    // - Para ampliar la lógica (p.ej. varias palabras por nivel), convierte LEVELS[i].word en un array y ajusta la reproducción/validación.
+  </script>
+</body>
+</html>
