@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Vocales - Aprende las letras</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Pantalla de inicio -->
+    <section id="screen-welcome" class="screen screen--active">
+      <header class="header">
+        <h1 class="title">¡Aprende las Vocales!</h1>
+        <p class="subtitle">Arrastra cada vocal a su imagen correcta</p>
+      </header>
+      <div class="welcome-actions">
+        <button id="btn-guide" class="btn btn--ghost" type="button" aria-label="Ver guía de juego">
+          <span class="btn-guide-icon" aria-hidden="true"></span>
+          ¿Cómo jugar?
+        </button>
+        <button id="btn-start" class="btn btn--primary" type="button">Comenzar juego</button>
+      </div>
+    </section>
+
+    <!-- Guía interactiva con audio -->
+    <div id="guide-overlay" class="guide-overlay" aria-hidden="true">
+      <div class="guide-modal" role="dialog" aria-labelledby="guide-title" aria-modal="true">
+        <header class="guide-header">
+          <h2 id="guide-title" class="guide-title">Cómo jugar</h2>
+          <button id="guide-close" class="guide-close" type="button" aria-label="Cerrar guía">&times;</button>
+        </header>
+        <ol class="guide-steps" id="guide-steps">
+          <li class="guide-step" data-step="0">
+            <button type="button" class="guide-step__play" aria-label="Escuchar paso 1">
+              <span class="guide-step__icon" aria-hidden="true">🔊</span>
+            </button>
+            <span class="guide-step__text">Mira las imágenes que aparecen. Cada una tiene una palabra debajo.</span>
+          </li>
+          <li class="guide-step" data-step="1">
+            <button type="button" class="guide-step__play" aria-label="Escuchar paso 2">
+              <span class="guide-step__icon" aria-hidden="true">🔊</span>
+            </button>
+            <span class="guide-step__text">Arrastra cada vocal (A, E, I, O, U) hacia la imagen que comienza con esa letra.</span>
+          </li>
+          <li class="guide-step" data-step="2">
+            <button type="button" class="guide-step__play" aria-label="Escuchar paso 3">
+              <span class="guide-step__icon" aria-hidden="true">🔊</span>
+            </button>
+            <span class="guide-step__text">Cuando aciertes, escucharás un sonido y ganarás puntos.</span>
+          </li>
+          <li class="guide-step" data-step="3">
+            <button type="button" class="guide-step__play" aria-label="Escuchar paso 4">
+              <span class="guide-step__icon" aria-hidden="true">🔊</span>
+            </button>
+            <span class="guide-step__text">Completa todas las parejas para pasar al siguiente nivel. ¡Diviértete!</span>
+          </li>
+        </ol>
+        <div class="guide-footer">
+          <button id="guide-play-all" class="btn btn--secondary btn--small" type="button">Escuchar toda la guía</button>
+          <button id="guide-stop" class="btn btn--ghost btn--small" type="button">Detener audio</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla del juego -->
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <div class="game-stats">
+          <span class="stat">
+            <span class="stat-label">Nivel</span>
+            <span id="current-level" class="stat-value">1</span>
+          </span>
+          <span class="stat">
+            <span class="stat-label">Puntos</span>
+            <span id="current-score" class="stat-value">0</span>
+          </span>
+        </div>
+      </header>
+
+      <div class="game-area">
+        <div class="drop-zones" id="drop-zones">
+          <!-- Zonas de soltar se generan por JS -->
+        </div>
+        <div class="drag-items" id="drag-items">
+          <!-- Vocales arrastrables se generan por JS -->
+        </div>
+      </div>
+
+      <footer class="game-footer">
+        <button id="btn-next" class="btn btn--secondary" type="button" disabled>
+          Siguiente nivel
+        </button>
+      </footer>
+    </section>
+
+    <!-- Pantalla de victoria / fin de nivel -->
+    <section id="screen-result" class="screen">
+      <div class="result-content" id="result-content">
+        <h2 id="result-title" class="result-title"></h2>
+        <p id="result-message" class="result-message"></p>
+        <p class="result-score">Puntos: <span id="result-score">0</span></p>
+        <div class="result-actions">
+          <button id="btn-replay" class="btn btn--primary" type="button">Jugar de nuevo</button>
+          <button id="btn-continue" class="btn btn--secondary" type="button">Siguiente nivel</button>
+        </div>
+      </div>
+    </section>
+    <!-- Lluvia de estrellas al completar nivel -->
+    <div id="star-rain" class="star-rain" aria-hidden="true"></div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

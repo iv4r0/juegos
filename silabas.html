@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprende las sílabas - ma, me, mi, mo, mu, pa, pe, pi, po, pu</title>
+  <style>
+    /* =============================================
+       PÁGINA EDUCATIVA: SÍLABAS (4-5 años)
+       Colores llamativos, tipografía grande, responsive
+       ============================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --fondo: #e8f4fc;
+      --primario: #ff6b9d;
+      --secundario: #7c5cff;
+      --acierto: #22c55e;
+      --texto: #1a1a2e;
+      --tarjeta: #ffffff;
+      --sombra: 0 8px 24px rgba(0,0,0,0.12);
+      --radio: 20px;
+      --fuente: 'Segoe UI', 'Comic Sans MS', system-ui, sans-serif;
+    }
+
+    html {
+      font-size: 18px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--fuente);
+      background: var(--fondo);
+      color: var(--texto);
+      min-height: 100vh;
+      padding: 1rem;
+      line-height: 1.4;
+    }
+
+    /* Contenedor principal */
+    .contenedor {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Título */
+    .titulo {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 800;
+      text-align: center;
+      color: var(--secundario);
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+    }
+
+    .subtitulo {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: #555;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Tarjeta del juego */
+    .tarjeta {
+      background: var(--tarjeta);
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      padding: 1.5rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Imagen (emoji grande) */
+    .imagen-palabra {
+      font-size: 5rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    /* Pregunta */
+    .pregunta {
+      font-size: 1.2rem;
+      color: var(--texto);
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+    }
+
+    /* Opciones (3 botones de palabra) */
+    .opciones {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .opcion {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--texto);
+      background: linear-gradient(145deg, #fff 0%, #f0f0f0 100%);
+      border: 3px solid var(--secundario);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .opcion:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 16px rgba(124, 92, 255, 0.3);
+    }
+
+    .opcion:active {
+      transform: scale(0.98);
+    }
+
+    .opcion--acierto {
+      background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+      border-color: #16a34a;
+      color: white;
+      animation: aciertoPulse 0.5s ease;
+    }
+
+    .opcion--error {
+      background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+      border-color: #ef4444;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes aciertoPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    /* Mensaje de felicitación */
+    .mensaje-feliz {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+
+    .mensaje-feliz.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .mensaje-feliz__caja {
+      background: var(--tarjeta);
+      border-radius: var(--radio);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: var(--sombra);
+      animation: popIn 0.4s ease;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .mensaje-feliz__texto {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--acierto);
+      margin-bottom: 0.5rem;
+    }
+
+    .mensaje-feliz__emoji {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    /* Contador y reiniciar */
+    .barra-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 1rem;
+    }
+
+    .aciertos {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--secundario);
+      background: var(--tarjeta);
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .btn-reiniciar {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.6rem 1.2rem;
+      background: var(--primario);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .btn-reiniciar:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-reiniciar:active {
+      transform: scale(0.98);
+    }
+
+    /* Pantalla final */
+    .pantalla-final {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .pantalla-final.visible {
+      display: block;
+    }
+
+    .pantalla-final .titulo {
+      margin-bottom: 1rem;
+    }
+
+    .pantalla-final .mensaje {
+      font-size: 1.3rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .juego.oculto {
+      display: none;
+    }
+
+    /* Responsive: móvil */
+    @media (max-width: 380px) {
+      .imagen-palabra { font-size: 4rem; }
+      .opcion { font-size: 1.2rem; padding: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <!-- Barra con aciertos y botón reiniciar -->
+    <div class="barra-info">
+      <span class="aciertos" id="aciertos">Aciertos: 0</span>
+      <button type="button" class="btn-reiniciar" id="btn-reiniciar">Reiniciar juego</button>
+    </div>
+
+    <!-- Zona del juego: imagen + 3 opciones -->
+    <section class="tarjeta juego" id="zona-juego">
+      <div class="imagen-palabra" id="imagen-palabra" aria-hidden="true"></div>
+      <p class="pregunta">¿Qué palabra es?</p>
+      <div class="opciones" id="opciones">
+        <!-- Se rellenan con JavaScript -->
+      </div>
+    </section>
+
+    <!-- Pantalla final cuando termina una ronda -->
+    <section class="pantalla-final" id="pantalla-final">
+      <h2 class="titulo">¡Lo hiciste muy bien!</h2>
+      <p class="mensaje">Has practicado las sílabas. Pulsa Reiniciar para jugar otra vez.</p>
+      <p class="aciertos" id="aciertos-final">Aciertos: 0</p>
+    </section>
+  </div>
+
+  <!-- Mensaje animado "¡Muy bien!" al acertar -->
+  <div class="mensaje-feliz" id="mensaje-feliz" aria-live="polite">
+    <div class="mensaje-feliz__caja">
+      <p class="mensaje-feliz__texto">¡Muy bien!</p>
+      <p class="mensaje-feliz__emoji" aria-hidden="true">🎉</p>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * JUEGO DE SÍLABAS - ma, me, mi, mo, mu, pa, pe, pi, po, pu
+     * Para niños de 4 a 5 años. Una sola página: HTML + CSS + JS.
+     */
+
+    // ========== DATOS: palabras con sílabas y emoji (imagen) ==========
+    const PALABRAS = [
+      { palabra: 'MAPA', emoji: '🗺️' },
+      { palabra: 'MAMÁ', emoji: '👩' },
+      { palabra: 'MESA', emoji: '🪑' },
+      { palabra: 'PISO', emoji: '🏠' },
+      { palabra: 'MONO', emoji: '🐵' },
+      { palabra: 'PUMA', emoji: '🐱' },
+      { palabra: 'PATO', emoji: '🦆' },
+      { palabra: 'MANO', emoji: '✋' },
+      { palabra: 'PIE', emoji: '🦶' },
+      { palabra: 'PELO', emoji: '💇' },
+      { palabra: 'PALO', emoji: '🪵' },
+      { palabra: 'MIMO', emoji: '🤡' },
+      { palabra: 'PAPA', emoji: '🥔' },
+      { palabra: 'MUSA', emoji: '🎭' },
+      { palabra: 'PALA', emoji: '🪣' },
+    ];
+
+    // ========== ESTADO DEL JUEGO ==========
+    let aciertos = 0;
+    let palabrasUsadas = [];
+    let opcionesActuales = [];
+
+    // ========== ELEMENTOS DEL DOM ==========
+    const elImagen = document.getElementById('imagen-palabra');
+    const elOpciones = document.getElementById('opciones');
+    const elAciertos = document.getElementById('aciertos');
+    const elMensajeFeliz = document.getElementById('mensaje-feliz');
+    const elZonaJuego = document.getElementById('zona-juego');
+    const elPantallaFinal = document.getElementById('pantalla-final');
+    const elAciertosFinal = document.getElementById('aciertos-final');
+    const elBtnReiniciar = document.getElementById('btn-reiniciar');
+
+    /**
+     * Mezcla un array (Fisher-Yates)
+     */
+    function mezclar(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    /**
+     * Elige una palabra al azar que no se haya usado recientemente.
+     * Devuelve la palabra correcta y 2 incorrectas para las 3 opciones.
+     */
+    function elegirPregunta() {
+      let disponibles = PALABRAS.filter(p => !palabrasUsadas.includes(p.palabra));
+      if (disponibles.length === 0) {
+        palabrasUsadas = [];
+        disponibles = PALABRAS;
+      }
+      const correcta = disponibles[Math.floor(Math.random() * disponibles.length)];
+      palabrasUsadas.push(correcta.palabra);
+
+      const otras = PALABRAS.filter(p => p.palabra !== correcta.palabra);
+      const incorrectas = mezclar(otras).slice(0, 2);
+      const opciones = mezclar([correcta.palabra, incorrectas[0].palabra, incorrectas[1].palabra]);
+      return { correcta, opciones };
+    }
+
+    /**
+     * Reproduce un sonido simple de acierto (Web Audio API).
+     */
+    function sonidoAcierto() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 523.25;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    /**
+     * Muestra el mensaje "¡Muy bien! 🎉" y lo oculta tras un momento.
+     */
+    function mostrarMensajeFeliz() {
+      elMensajeFeliz.classList.add('visible');
+      setTimeout(() => {
+        elMensajeFeliz.classList.remove('visible');
+      }, 1200);
+    }
+
+    /**
+     * Pinta la siguiente pregunta: imagen + 3 opciones.
+     */
+    function mostrarSiguientePregunta() {
+      const { correcta, opciones } = elegirPregunta();
+      opcionesActuales = opciones;
+
+      elImagen.textContent = correcta.emoji;
+      elImagen.setAttribute('aria-label', 'Imagen de la palabra');
+
+      elOpciones.innerHTML = '';
+      opciones.forEach((texto) => {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'opcion';
+        boton.textContent = texto;
+        boton.dataset.palabra = texto;
+        boton.dataset.correcta = texto === correcta.palabra ? 'si' : 'no';
+        boton.addEventListener('click', alElegirOpcion);
+        elOpciones.appendChild(boton);
+      });
+    }
+
+    /**
+     * Cuando el niño hace clic en una opción.
+     */
+    function alElegirOpcion(ev) {
+      const boton = ev.currentTarget;
+      const esCorrecta = boton.dataset.correcta === 'si';
+
+      // Evitar más clics mientras se muestra el resultado
+      elOpciones.querySelectorAll('.opcion').forEach(b => {
+        b.style.pointerEvents = 'none';
+      });
+
+      if (esCorrecta) {
+        boton.classList.add('opcion--acierto');
+        aciertos += 1;
+        elAciertos.textContent = 'Aciertos: ' + aciertos;
+        sonidoAcierto();
+        mostrarMensajeFeliz();
+
+        // Tras un momento, siguiente pregunta o pantalla final
+        setTimeout(() => {
+          if (palabrasUsadas.length >= PALABRAS.length) {
+            elZonaJuego.classList.add('oculto');
+            elAciertosFinal.textContent = 'Aciertos: ' + aciertos;
+            elPantallaFinal.classList.add('visible');
+          } else {
+            mostrarSiguientePregunta();
+          }
+        }, 1500);
+      } else {
+        boton.classList.add('opcion--error');
+        setTimeout(() => {
+          boton.classList.remove('opcion--error');
+          elOpciones.querySelectorAll('.opcion').forEach(b => {
+            b.style.pointerEvents = '';
+          });
+        }, 600);
+      }
+    }
+
+    /**
+     * Reinicia el juego: contador a 0, muestra primera pregunta, oculta pantalla final.
+     */
+    function reiniciarJuego() {
+      aciertos = 0;
+      palabrasUsadas = [];
+      elAciertos.textContent = 'Aciertos: 0';
+      elPantallaFinal.classList.remove('visible');
+      elZonaJuego.classList.remove('oculto');
+      mostrarSiguientePregunta();
+    }
+
+    // ========== INICIO ==========
+    elBtnReiniciar.addEventListener('click', reiniciarJuego);
+    mostrarSiguientePregunta();
+  </script>
+</body>
+</html>

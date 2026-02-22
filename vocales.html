@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprende las vocales - A, E, I, O, U</title>
+  <style>
+    /* =============================================
+       PÁGINA EDUCATIVA: VOCALES (4-5 años)
+       Una sola página: HTML + CSS + JS
+       ============================================= */
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fondo: #e8f4fc;
+      --primario: #6366f1;
+      --primario-oscuro: #4f46e5;
+      --acierto: #22c55e;
+      --texto: #1a1a2e;
+      --tarjeta: #ffffff;
+      --sombra: 0 8px 24px rgba(0,0,0,0.12);
+      --radio: 20px;
+      --fuente: 'Segoe UI', 'Comic Sans MS', system-ui, sans-serif;
+    }
+
+    html { font-size: 18px; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: var(--fuente);
+      background: var(--fondo);
+      color: var(--texto);
+      min-height: 100vh;
+      padding: 1rem;
+      line-height: 1.4;
+    }
+
+    .contenedor {
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cabecera: nivel, puntuación, reiniciar */
+    .cabecera {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .nivel-badge {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primario);
+      background: var(--tarjeta);
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .puntuacion {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #b45309;
+      background: linear-gradient(145deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.5rem 0.9rem;
+      border-radius: 12px;
+      border: 2px solid #f59e0b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .puntuacion .moneda {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .btn-reiniciar {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.6rem 1.2rem;
+      background: #ec4899;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+      transition: transform 0.15s ease;
+    }
+    .btn-reiniciar:hover { transform: scale(1.05); }
+    .btn-reiniciar:active { transform: scale(0.98); }
+
+    .titulo {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      text-align: center;
+      color: var(--primario);
+      margin-bottom: 1rem;
+    }
+
+    /* Tarjeta del juego */
+    .tarjeta {
+      background: var(--tarjeta);
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      padding: 1.5rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .imagen-palabra {
+      font-size: 5rem;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    .palabra-incompleta {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--texto);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .pregunta {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Opciones: 5 vocales */
+    .opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .opcion-vocal {
+      width: 3.2rem;
+      height: 3.2rem;
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: inherit;
+      color: var(--texto);
+      background: linear-gradient(145deg, #fff 0%, #e0e7ff 100%);
+      border: 3px solid var(--primario);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .opcion-vocal:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    }
+    .opcion-vocal:active { transform: scale(0.95); }
+
+    .opcion-vocal--acierto {
+      background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+      border-color: #16a34a;
+      color: white;
+      animation: aciertoPulse 0.5s ease;
+    }
+
+    .opcion-vocal--error {
+      background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+      border-color: #ef4444;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes aciertoPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    /* Mensaje "¡Muy bien!" */
+    .mensaje-feliz {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .mensaje-feliz.visible {
+      display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .mensaje-feliz__caja {
+      background: var(--tarjeta);
+      border-radius: var(--radio);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: var(--sombra);
+      animation: popIn 0.4s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7) translateY(-15px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .mensaje-feliz__texto {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--acierto);
+      margin-bottom: 0.5rem;
+    }
+    .mensaje-feliz__emoji { font-size: 2.8rem; line-height: 1; }
+
+    /* Animación de monedas (+10) */
+    .monedas-ganadas {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 101;
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px;
+      max-width: 200px;
+      pointer-events: none;
+    }
+    .monedas-ganadas.visible {
+      display: flex;
+    }
+    .moneda-ganada {
+      font-size: 1.8rem;
+      line-height: 1;
+      animation: monedaSube 0.6s ease forwards;
+      opacity: 0;
+    }
+    .moneda-ganada:nth-child(1) { animation-delay: 0.05s; }
+    .moneda-ganada:nth-child(2) { animation-delay: 0.1s; }
+    .moneda-ganada:nth-child(3) { animation-delay: 0.15s; }
+    .moneda-ganada:nth-child(4) { animation-delay: 0.2s; }
+    .moneda-ganada:nth-child(5) { animation-delay: 0.25s; }
+    .moneda-ganada:nth-child(6) { animation-delay: 0.3s; }
+    .moneda-ganada:nth-child(7) { animation-delay: 0.35s; }
+    .moneda-ganada:nth-child(8) { animation-delay: 0.4s; }
+    .moneda-ganada:nth-child(9) { animation-delay: 0.45s; }
+    .moneda-ganada:nth-child(10) { animation-delay: 0.5s; }
+    @keyframes monedaSube {
+      0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(20px);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.2) translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* Pantalla entre niveles */
+    .pantalla-nivel {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .pantalla-nivel.visible { display: block; }
+    .pantalla-nivel .titulo { margin-bottom: 1rem; }
+    .pantalla-nivel .mensaje {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+    .btn-siguiente-nivel {
+      font-family: inherit;
+      font-size: 1.2rem;
+      font-weight: 700;
+      padding: 0.8rem 1.5rem;
+      background: var(--primario);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      transition: transform 0.15s ease;
+    }
+    .btn-siguiente-nivel:hover { transform: scale(1.05); }
+
+    /* Pantalla final */
+    .pantalla-final {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .pantalla-final.visible { display: block; }
+    .pantalla-final .titulo { margin-bottom: 1rem; }
+    .pantalla-final .mensaje { font-size: 1.2rem; color: #555; margin-bottom: 1rem; }
+    .pantalla-final .puntuacion-final {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #b45309;
+      margin-bottom: 1.5rem;
+    }
+
+    .juego.oculto { display: none; }
+
+    @media (max-width: 380px) {
+      .imagen-palabra { font-size: 4rem; }
+      .palabra-incompleta { font-size: 1.5rem; }
+      .opcion-vocal { width: 2.8rem; height: 2.8rem; font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <!-- Cabecera: nivel, monedas, reiniciar -->
+    <div class="cabecera">
+      <span class="nivel-badge" id="nivel-badge">Nivel 1</span>
+      <span class="puntuacion">
+        <span class="moneda" aria-hidden="true">🪙</span>
+        <span id="puntos">0</span>
+      </span>
+      <button type="button" class="btn-reiniciar" id="btn-reiniciar">Reiniciar</button>
+    </div>
+
+    <h1 class="titulo">¿Qué vocal falta?</h1>
+
+    <!-- Zona del juego -->
+    <section class="tarjeta juego" id="zona-juego">
+      <div class="imagen-palabra" id="imagen-palabra" aria-hidden="true"></div>
+      <p class="palabra-incompleta" id="palabra-incompleta"></p>
+      <p class="pregunta">Elige la vocal que completa la palabra</p>
+      <div class="opciones" id="opciones">
+        <!-- A, E, I, O, U por JS -->
+      </div>
+    </section>
+
+    <!-- Pantalla "Siguiente nivel" -->
+    <section class="pantalla-nivel" id="pantalla-nivel">
+      <h2 class="titulo" id="titulo-nivel">¡Nivel 1 completado!</h2>
+      <p class="mensaje" id="mensaje-nivel">Muy bien. Pulsa el botón para continuar al Nivel 2.</p>
+      <p class="puntuacion" id="puntos-nivel">🪙 0</p>
+      <button type="button" class="btn-siguiente-nivel" id="btn-siguiente-nivel">Siguiente nivel</button>
+    </section>
+
+    <!-- Pantalla final (fin del juego) -->
+    <section class="pantalla-final" id="pantalla-final">
+      <h2 class="titulo">¡Lo hiciste genial!</h2>
+      <p class="mensaje">Has completado los 3 niveles.</p>
+      <p class="puntuacion-final" id="puntuacion-final">🪙 0 monedas</p>
+      <button type="button" class="btn-reiniciar" id="btn-reiniciar-final">Reiniciar juego</button>
+    </section>
+  </div>
+
+  <!-- Mensaje "¡Muy bien!" -->
+  <div class="mensaje-feliz" id="mensaje-feliz" aria-live="polite">
+    <div class="mensaje-feliz__caja">
+      <p class="mensaje-feliz__texto">¡Muy bien!</p>
+      <p class="mensaje-feliz__emoji" aria-hidden="true">🎉</p>
+    </div>
+  </div>
+
+  <!-- Animación de 10 monedas al acertar -->
+  <div class="monedas-ganadas" id="monedas-ganadas" aria-hidden="true"></div>
+
+  <script>
+    /**
+     * JUEGO DE VOCALES - A, E, I, O, U
+     * Para niños 4-5 años. Primera letra vocal.
+     * 3 niveles, 10 monedas por acierto, todo en un solo HTML.
+     */
+
+    const VOCALES = ['A', 'E', 'I', 'O', 'U'];
+
+    // Palabras por nivel: cada una empieza por una vocal (A, E, I, O, U)
+    const NIVELES = [
+      [
+        { palabra: 'AVIÓN', vocal: 'A', emoji: '✈️' },
+        { palabra: 'ESTRELLA', vocal: 'E', emoji: '⭐' },
+        { palabra: 'IGLESIA', vocal: 'I', emoji: '⛪' },
+        { palabra: 'OSO', vocal: 'O', emoji: '🐻' },
+        { palabra: 'UVA', vocal: 'U', emoji: '🍇' },
+      ],
+      [
+        { palabra: 'ÁRBOL', vocal: 'A', emoji: '🌳' },
+        { palabra: 'ELEFANTE', vocal: 'E', emoji: '🐘' },
+        { palabra: 'ISLA', vocal: 'I', emoji: '🏝️' },
+        { palabra: 'OJO', vocal: 'O', emoji: '👁️' },
+        { palabra: 'UNICORNIO', vocal: 'U', emoji: '🦄' },
+      ],
+      [
+        { palabra: 'ARAÑA', vocal: 'A', emoji: '🕷️' },
+        { palabra: 'ESCUELA', vocal: 'E', emoji: '🏫' },
+        { palabra: 'IGUANA', vocal: 'I', emoji: '🦎' },
+        { palabra: 'OVEJA', vocal: 'O', emoji: '🐑' },
+        { palabra: 'UNIFORME', vocal: 'U', emoji: '👔' },
+      ],
+    ];
+
+    // Normalizar Á -> A para mostrar palabra sin primera letra
+    function primeraLetra(palabra) {
+      const p = palabra.toUpperCase();
+      if (p[0] === 'Á') return 'A';
+      if (p[0] === 'É') return 'E';
+      if (p[0] === 'Í') return 'I';
+      if (p[0] === 'Ó') return 'O';
+      if (p[0] === 'Ú') return 'U';
+      return p[0];
+    }
+
+    function restoPalabra(palabra) {
+      return palabra.slice(1).toLowerCase();
+    }
+
+    // Estado
+    let nivelActual = 0;
+    let indicePalabra = 0;
+    let puntos = 0;
+    let palabrasDelNivel = [];
+
+    // DOM
+    const elNivelBadge = document.getElementById('nivel-badge');
+    const elPuntos = document.getElementById('puntos');
+    const elBtnReiniciar = document.getElementById('btn-reiniciar');
+    const elImagen = document.getElementById('imagen-palabra');
+    const elPalabraIncompleta = document.getElementById('palabra-incompleta');
+    const elOpciones = document.getElementById('opciones');
+    const elMensajeFeliz = document.getElementById('mensaje-feliz');
+    const elMonedasGanadas = document.getElementById('monedas-ganadas');
+    const elZonaJuego = document.getElementById('zona-juego');
+    const elPantallaNivel = document.getElementById('pantalla-nivel');
+    const elTituloNivel = document.getElementById('titulo-nivel');
+    const elMensajeNivel = document.getElementById('mensaje-nivel');
+    const elPuntosNivel = document.getElementById('puntos-nivel');
+    const elBtnSiguienteNivel = document.getElementById('btn-siguiente-nivel');
+    const elPantallaFinal = document.getElementById('pantalla-final');
+    const elPuntuacionFinal = document.getElementById('puntuacion-final');
+    const elBtnReiniciarFinal = document.getElementById('btn-reiniciar-final');
+
+    function mezclar(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function sonidoAcierto() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 523.25;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    function mostrarMensajeFeliz() {
+      elMensajeFeliz.classList.add('visible');
+      setTimeout(function () {
+        elMensajeFeliz.classList.remove('visible');
+      }, 1200);
+    }
+
+    function mostrarMonedas() {
+      elMonedasGanadas.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const span = document.createElement('span');
+        span.className = 'moneda-ganada';
+        span.textContent = '🪙';
+        span.setAttribute('aria-hidden', 'true');
+        elMonedasGanadas.appendChild(span);
+      }
+      elMonedasGanadas.classList.add('visible');
+      setTimeout(function () {
+        elMonedasGanadas.classList.remove('visible');
+      }, 1200);
+    }
+
+    function actualizarPuntos() {
+      elPuntos.textContent = puntos;
+    }
+
+    function mostrarPregunta() {
+      const item = palabrasDelNivel[indicePalabra];
+      if (!item) return;
+
+      elImagen.textContent = item.emoji;
+      elImagen.setAttribute('aria-label', 'Imagen de la palabra');
+      // Palabra sin la primera letra: "_vión"
+      elPalabraIncompleta.textContent = '_' + restoPalabra(item.palabra);
+
+      elOpciones.innerHTML = '';
+      VOCALES.forEach(function (v) {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'opcion-vocal';
+        boton.textContent = v;
+        boton.dataset.vocal = v;
+        boton.dataset.correcta = v === primeraLetra(item.palabra) ? 'si' : 'no';
+        boton.addEventListener('click', alElegirVocal);
+        elOpciones.appendChild(boton);
+      });
+    }
+
+    function alElegirVocal(ev) {
+      const boton = ev.currentTarget;
+      const esCorrecta = boton.dataset.correcta === 'si';
+
+      document.querySelectorAll('.opcion-vocal').forEach(function (b) {
+        b.style.pointerEvents = 'none';
+      });
+
+      if (esCorrecta) {
+        boton.classList.add('opcion-vocal--acierto');
+        puntos += 10;
+        actualizarPuntos();
+        sonidoAcierto();
+        mostrarMensajeFeliz();
+        mostrarMonedas();
+
+        setTimeout(function () {
+          indicePalabra++;
+          if (indicePalabra >= palabrasDelNivel.length) {
+            // Fin del nivel
+            elZonaJuego.classList.add('oculto');
+            elTituloNivel.textContent = '¡Nivel ' + (nivelActual + 1) + ' completado!';
+            elMensajeNivel.textContent = nivelActual < 2
+              ? 'Muy bien. Pulsa el botón para continuar al siguiente nivel.'
+              : 'Has terminado todos los niveles.';
+            elPuntosNivel.textContent = '🪙 ' + puntos;
+            if (nivelActual >= 2) {
+              elPantallaNivel.classList.add('visible');
+              elBtnSiguienteNivel.textContent = 'Ver resultado';
+              elBtnSiguienteNivel.onclick = function () {
+                elPantallaNivel.classList.remove('visible');
+                elPantallaFinal.classList.add('visible');
+                elPuntuacionFinal.textContent = '🪙 ' + puntos + ' monedas';
+              };
+            } else {
+              elPantallaNivel.classList.add('visible');
+              elBtnSiguienteNivel.textContent = 'Siguiente nivel';
+              elBtnSiguienteNivel.onclick = irSiguienteNivel;
+            }
+          } else {
+            mostrarPregunta();
+            document.querySelectorAll('.opcion-vocal').forEach(function (b) {
+              b.style.pointerEvents = '';
+            });
+          }
+        }, 1500);
+      } else {
+        boton.classList.add('opcion-vocal--error');
+        setTimeout(function () {
+          boton.classList.remove('opcion-vocal--error');
+          document.querySelectorAll('.opcion-vocal').forEach(function (b) {
+            b.style.pointerEvents = '';
+          });
+        }, 600);
+      }
+    }
+
+    function irSiguienteNivel() {
+      nivelActual++;
+      indicePalabra = 0;
+      palabrasDelNivel = mezclar(NIVELES[nivelActual]);
+      elNivelBadge.textContent = 'Nivel ' + (nivelActual + 1);
+      elPantallaNivel.classList.remove('visible');
+      elZonaJuego.classList.remove('oculto');
+      mostrarPregunta();
+    }
+
+    function iniciarJuego() {
+      nivelActual = 0;
+      indicePalabra = 0;
+      puntos = 0;
+      palabrasDelNivel = mezclar(NIVELES[0]);
+      elNivelBadge.textContent = 'Nivel 1';
+      actualizarPuntos();
+      elPantallaNivel.classList.remove('visible');
+      elPantallaFinal.classList.remove('visible');
+      elZonaJuego.classList.remove('oculto');
+      elBtnSiguienteNivel.textContent = 'Siguiente nivel';
+      elBtnSiguienteNivel.onclick = irSiguienteNivel;
+      mostrarPregunta();
+    }
+
+    elBtnReiniciar.addEventListener('click', iniciarJuego);
+    elBtnReiniciarFinal.addEventListener('click', iniciarJuego);
+
+    iniciarJuego();
+  </script>
+</body>
+</html>

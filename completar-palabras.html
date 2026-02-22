@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Completar palabras con vocales</title>
+  <link rel="stylesheet" href="css/completar-palabras.css">
+</head>
+<body>
+  <div id="app" class="app app--completar">
+    <!-- Pantalla de inicio -->
+    <section id="screen-welcome" class="screen screen--active">
+      <header class="header">
+        <h1 class="title">Completar palabras</h1>
+        <p class="subtitle">Arrastra las vocales para completar la palabra de cada imagen</p>
+      </header>
+      <button id="btn-start" class="btn btn--primary" type="button">Comenzar juego</button>
+    </section>
+
+    <!-- Pantalla del juego -->
+    <section id="screen-game" class="screen">
+      <header class="game-header">
+        <span class="stat">Palabra <span id="current-index">1</span> de <span id="total-words">0</span></span>
+        <span class="stat">Puntos: <span id="current-score">0</span></span>
+      </header>
+
+      <div class="game-card">
+        <div class="game-card__image" id="word-emoji" aria-hidden="true"></div>
+        <div class="game-card__word" id="word-slots">
+          <!-- La palabra con huecos se genera por JS -->
+        </div>
+        <div class="game-card__vocals" id="drag-vocals">
+          <!-- Vocales arrastrables se generan por JS -->
+        </div>
+      </div>
+
+      <footer class="game-footer">
+        <button id="btn-check" class="btn btn--secondary" type="button" disabled>Comprobar</button>
+        <button id="btn-next" class="btn btn--secondary" type="button" style="display: none;">Siguiente</button>
+      </footer>
+    </section>
+
+    <!-- Pantalla resultado -->
+    <section id="screen-result" class="screen">
+      <div class="result-content">
+        <h2 class="result-title">¡Muy bien!</h2>
+        <p class="result-message">Has completado todas las palabras.</p>
+        <p class="result-score">Puntos: <span id="result-score">0</span></p>
+        <button id="btn-replay" class="btn btn--primary" type="button">Jugar de nuevo</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="js/completar-app.js"></script>
+</body>
+</html>
